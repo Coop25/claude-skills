@@ -1,0 +1,7 @@
+{
+  "repo": "Coop25/claude-skills",
+  "install_root": "~/.claude/skills",
+  "skills": [
+    {"name": "pr-review", "description": "Use when asked to review a GitHub pull request given a PR URL or number, to re-review a PR after new commits or replies, or to watch a PR and fix review findings.", "path": "skills/pr-review", "files": ["SKILL.md", "blind.md", "checklist.md", "common.md", "mode-auto.md", "mode-autofix.md", "mode-manual.md", "preflight.md", "scripts/pr-context.sh", "scripts/watch-pr.sh", "verification.md"]}
+  ]
+}

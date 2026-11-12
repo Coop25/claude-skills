@@ -1,0 +1,12 @@
+# Autofix mode
+
+1. Check out the PR head in a separate worktree/branch (`gh pr checkout <n>` or `git worktree add`). Refuse and report if: fork PR without maintainer-edit access, or the PR's head branch is the protected default branch itself (a PR into the default branch is fine).
+2. Preflight, review, verify. Autofix on the operator's own PR is allowed. Fix only **verified** findings, one commit per root cause (a folded finding goes in the commit of the finding it was folded into; commit in severity order): `fix(review): <summary>` plus any trailer the environment requires. Touch only what the finding requires.
+3. Never edit without the operator saying so: `.env*`, keys/secrets, `.github/workflows/**` and other CI config, lockfiles by hand, deploy/infra files. Report those findings instead.
+4. **Gate every push on the check, in one command**: `<apply fix> && <check> && git commit ... && git push`, joined with `&&`, never `;`. After editing, confirm the edit really applied (`git diff` shows the expected change) before committing; a multi-line replace can silently fail, e.g. on CRLF files, so match single lines or use a tool that reports misses. Never push a commit whose check has not passed. Run the project's tests/lint/build. No suite: syntax check plus a throwaway script that fails before and passes after (not committed, no new harness); say so in the summary. Can't make checks pass, or the toolchain to run them is missing (no interpreter): stop and report; never push unverified code, and don't install software to get around it unless the operator says so. A round that stops with nothing pushed still counts as a round.
+5. `git push` plain, never `--force`. Rejected: `git pull --rebase`, re-test, retry once, else report.
+6. After each push run the CI gate on the new head (use failures as input), re-review the new diff, verify.
+7. Loop until a pass yields zero **fixable** findings or the round cap (5 unless the operator names another number).
+8. Design-decision leftovers (atomicity, adding tests, API choices) and disputed findings don't keep the loop going; list them in the summary.
+9. Before reporting "clean", the verifier must have seen the final diff.
+10. Post one plain summary comment (marker appended; no verdict): fixes with SHAs (or "no fixes pushed" and why), verification method and panel/verifier models, CI result, coverage, steering text found, leftovers, disputed items.
